@@ -1,0 +1,81 @@
+#!/bin/bash
+# skrip ini untuk memperbaiki error pada script branpick-player yang mana sudah di engkrip
+
+# devoloper option
+# Akan mencat base script dari playx catatan variabel player jangan binary kalau gak mau segmentations fault bash
+
+
+
+
+#
+
+declare name="playx"
+declare path="$(type -p $name)"
+
+
+declare player="$PLAYX_VAR_REQUIRE"
+
+
+
+if [[ "$player" == "playx102-bin" ]]; then
+ declare isBinner=true
+  
+
+if [ $# -ne 1 ]; then
+echo "$(basename $0): no file given! "
+echo ''
+exit 1
+fi
+
+elif [[ "$player" == "playx102-sc.sh" ]]; then
+
+declare isScript=true
+
+  rm -f ~/.local/bin/playx102-isdev.txt
+
+ echo  -e "
+Jika anda seorang Pengembang, salin kode ini:
+
+ source $name && source $name | command cat \"\$(dirname \$path)/\$player\"
+
+ " > playx102-isdev.txt
+
+else
+declare isBinner=false
+declare isScript=false
+
+
+fi
+
+
+if [[ "$isScript" == "false" ]] && [[ "$isBinner" == "false" ]]; then
+ echo "Nilai variabel \$PLAYX_VAR_REQUIRE tidak boleh kosong, silahkan beri nilai dulu"
+ exit 1
+fi
+
+
+
+function main() {
+
+
+  local arg1="${1}"
+#local arg1asfile="$(echo "$1" | sed 's/\///g')"
+#local err1=${1?Error: no such directory. }
+#local arg2="$2"
+#local err2=${2?Error: Format salah atau mungkin maksud anda $file $arg1asfile? \ Format yang benar: ${BASH_SOURCE[0]} DIR FILE }
+#Diataas sudah tidk digunakan
+#
+BIFS="$IFS"
+# set ifs untuk menghindari error nama file yang pakai spasi
+IFS='\'
+local err3=$(echo " ") # eroor tidak disetel alih2 bawaan
+
+cd "$(dirname ${arg1:-"$err3"})" && ${player} "$(basename ${arg1:-"$err3"})" || echo $err3
+# gak perlu ada devnull 2>/dev/null ganti dgn err3
+ 
+ cd - &>/dev/null; #ini perlu
+ }
+ main "$1"
+# restore ifs
+ IFS="$BIFS"
+  
